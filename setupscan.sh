@@ -6,7 +6,7 @@
 
 #get device IP adress
 
-    getIP(){
+getIP(){
     echo IP address is
     myIP="$(hostname -I)"
     echo $myIP
@@ -29,7 +29,7 @@ getSubnet(){
 ScanMySubnet(){
     echo 
     echo "Scanning Subnet"
-    nmap $mySubnet -sC -A -V --open -oX scannedlist.xml 
+    nmap $mySubnet -sC -A --open -oX scannedlist.xml 
 }
 
 CheckShodan()
@@ -53,11 +53,13 @@ CheckFileShares(){
 }
 
 Output(){
-    CheckShodan
+    getIP
+    getSubnet
+    ScanMySubnet
+    #CheckShodan
 }
 
 
 
 
 Output
-#echo CheckShodan
