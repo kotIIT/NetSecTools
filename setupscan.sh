@@ -13,6 +13,12 @@ getIP(){
     echo
 }
 
+getInterface(){
+    echo "Interface name is"
+    myInterface = "ip -o -f inet addr show | awk '/scope global/ {print $2}')"
+    echo $myInterface
+}
+
 #getsubnet mask
 #Helps identify scope of the network
 getSubnet(){
@@ -20,6 +26,8 @@ getSubnet(){
     mySubnet="$(ip -o -f inet addr show | awk '/scope global/ {print $4}')"
     echo $mySubnet 
 }
+
+
 
 
 #Perform a scripted network scan to find devices
@@ -43,7 +51,7 @@ CheckShodan()
 #This may break the network
 #please be careful
 
-CheckFileShares(){
+CheckNTLMHashes(){
     echo "Are there Computers connected to the network with the following:"
     echo "Windows with File Sharing Enabled? "
     echo "1. Yes"
@@ -54,6 +62,7 @@ CheckFileShares(){
 
 Output(){
     getIP
+    getInterface
     getSubnet
     ScanMySubnet
     #CheckShodan
