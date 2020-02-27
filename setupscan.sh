@@ -40,32 +40,14 @@ ScanMySubnet(){
     nmap $mySubnet -sC -A --open -oX scannedlist.xml 
 }
 
-CheckShodan()
-{
-    echo "Checking IP in Shodan"
-    shodan host $myIP
-}
 
-
-#Caputre  NTLM hashes within the network
-#This may break the network
-#please be careful
-
-CheckNTLMHashes(){
-    echo "Are there Computers connected to the network with the following:"
-    echo "Windows with File Sharing Enabled? "
-    echo "1. Yes"
-    echo "2. No"
-    read ""
-    #responder -eth0 -wrf
-}
 
 Output(){
     getIP
     getInterface
     getSubnet
     ScanMySubnet
-    #CheckShodan
+
 }
 
 
