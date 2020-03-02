@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #automated enumeration
 #this script should perform automated scans by pulling network info from DHCP
 
