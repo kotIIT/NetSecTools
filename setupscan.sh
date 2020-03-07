@@ -4,7 +4,17 @@
 
 #what to do
 
-#get device IP adress
+#get requirements needed for install
+
+## Check if root user
+CheckRoot()
+if [ "$EUID" -ne 0 ]
+  then echo "Operation Requires Root. Please run again using 'sudo'"
+  exit
+fi
+
+
+#Display device IP adress from DHCP
 
 getIP(){
     echo IP address is
@@ -13,22 +23,34 @@ getIP(){
     echo
 }
 
-getInterface(){
-    echo "Interface name is"
-    myInterface = "ip -o -f inet addr show | awk '/scope global/ {print $2}')"
-    echo $myInterface
+
+#Disply the Router IP Address
+
+getGateway(){
+    echo "Default Gateway is"
+    myGateway="$(ip r | awk '/default via/ {print $3}')"
+    echo $myGateway
+    echo
 }
+
 
 #getsubnet mask
 #Helps identify scope of the network
 getSubnet(){
     echo "subnet mask is"
     mySubnet="$(ip -o -f inet addr show | awk '/scope global/ {print $4}')"
-    echo $mySubnet 
+    echo $mySubnet
+    echo
 }
 
 
-
+#Get device interface name for Network connection
+getInterface(){
+    echo "Interface name is"
+    myInterface="$(ip -o -f inet addr show | awk '/scope global/ {print $2}')"
+    echo $myInterface
+    echo
+}
 
 #Perform a scripted network scan to find devices
 #Identify Open Ports
@@ -37,17 +59,18 @@ getSubnet(){
 ScanMySubnet(){
     echo 
     echo "Scanning Subnet"
-    nmap $mySubnet -sC -A --open -oX scannedlist.xml 
+    sudo nmap $mySubnet -sC -A --open -oX scannedlist.xml 
 }
 
 
 
 Output(){
+    CheckRoot
+    getInterface  
     getIP
-    getInterface
-    getSubnet
+    getGateway
+    getSubnet   
     ScanMySubnet
-
 }
 
 
