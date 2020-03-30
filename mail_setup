@@ -1,0 +1,122 @@
+#!/bin/bash
+
+#this is a menu driven shell that will:
+#1. Check a Server status 
+#2. Find the router hops
+#3. Enter login and display owner
+#4. Compress and email file
+#5. Send a file (using mailx)
+#6. Exit Program
+
+
+#Display the options User can Choose from
+function showMenu()
+{	
+	echo "Please select the option by pressing the number"
+	echo ------------------------
+	echo "Press 1 to check a Server status: " 
+	echo "Press 2 to find the router hops: "
+	echo "Press 3 to Enter login and display owner: "
+	echo "Press 4 to Compress and email file: "
+	echo "Press 5 to Send a file using email: "
+	echo "Press 0 to Exit Program: "
+	echo "------------------------"
+	echo ""
+}
+
+#Run selected option user chooses 
+function Menu()
+{	
+	local choice
+	read -n1 -p "> " choice 
+	clear
+  	case $choice in
+  		1) Ping_IP ;;
+  		2) IP_Hops ;;
+  		3) ID_Owner ;; 
+  		4) Compress_Email ;;
+  		5) Email_File ;;
+  		0) Prompt_Exit;; 		
+	esac
+ }
+
+#Function to Ping IP Once
+function Ping_IP()
+{
+	read -p "Input IP Address > " IP  
+	ping $IP -c1   
+	
+}
+
+#Function to trace Hops for IP
+function IP_Hops()
+{
+	read -p "View Router Hops for IP > " IP 
+  traceroute $IP
+} 
+
+#Function to OutputID Owner
+function ID_Owner()
+{	
+	read -p "Input ID to display ID owner > " ID            
+	echo "ID owner is "
+	id -u $ID	
+}
+
+#Function to compress and email a file to User
+function Compress_Email()
+{
+	read -p "Input File to Compress > " Tfile 		
+  read -p "Name Compressed file > " cfile 
+	read -p "Who would you like to send? > " mail #declare contact
+  tar -zcvf $cfile.tar.gz $Tfile # compress selected file
+	read -p "Input subject line > " SU		
+	mailx -s "$SU" $mail < $cfile.tar.gz  #email compressed file
+}
+
+
+#Function to Email a file to User
+function Email_File()
+{
+	read -p "Who would you like to email? > " mail 	#declare contact
+	read -p "Attach File to Send > " Tfile	
+	read -p "Input Subject > " SU	
+	read -p "Enter body of the message > " msgbody 
+	echo "$msgbody" | mailx -s "$SU" -a $Tfile $mail #email file to sender
+}
+
+
+#Function that will ask user if they REALLY want to quit
+function Prompt_Exit () 
+{
+	read -n1 -p "Are you sure you want to quit? (Y/N) " Choice 
+	echo 
+		case $Choice in
+			y|Y) exit 1
+	esac
+}
+	
+#Creates a pause within the loop
+#User must press Enter to Continue
+function Pause()
+{
+	echo
+	echo
+	echo "Press enter For Main Menu"
+	read 
+	clear
+}
+
+
+#Run Script in Loop
+#Used this method to Allow the Pause Function to work Properly
+while true
+do
+ showMenu
+ Menu
+ Pause
+done	
+exit 0
+
+
+

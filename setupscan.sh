@@ -1,14 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #automated enumeration
 #this script should perform automated scans by pulling network info from DHCP
 #what to do
-#get device IP adress
+#get device IP address
 myIP="$(hostname -I)"
 myInterface="$(ip -o -f inet addr show | awk '/scope global/ {print $2}')"
 mySubnet="$(ip -o -f inet addr show | awk '/scope global/ {print $4}')"
 outFile="Output/Devices.txt"
 IPList="Output/IPs.txt"
 
+#get a list of devices on the network
 getDeviceList()
 {
     echo "Performing ARP Scan..."
@@ -26,38 +27,19 @@ getDeviceList()
 #Identify Default Credentials
 
 ScanSubnet(){
-    File="Output/scannedlist.xml"
+    File="Output/scannedsubnet.xml"
     echo 
     echo "Scanning Subnet"
     echo $mySubnet
-    nmap $mySubnet -sC -A --open  -A -oX  $outFile -webxml
+    sudo nmap $mySubnet -A --open  -A -oX  $File  --webxml
 }
 
 ScanList(){
-    outFile="Output/list.xml"
+    File="Output/list.xml"
     echo 
     echo "Scanning Listed Devices..."
-    nmap -iL  $IPList -sC --open -oX $outFile
+    sudo nmap -iL  $IPList -sC --open -oX  $File --webxml
 }
-
-Menu()
-{
-    echo "This is the menu of the script"
-    echo ""
-    echo "Enter 'ip' to find your IP and subnet"
-    echo "Enter 'iface' to list device interface"
-    echo "Enter the Port number to check if the port is open in the device list"
-    echo ""
-    echo "Press d. to listen for devices on the network"
-    echo "Press l. to display the devices on the network"
-    echo "Press s. to perform a scripted network scan  "
-    echo "press m to display menu again"
-    echo ""
-    echo ""
-    echo "To bypass this menu, enter the arguement before running the script"
-
-}
-
 
 ScanPort(){
     File='Output/Port'$arg'.txt'
@@ -68,10 +50,28 @@ ScanPort(){
     cat $File
     }
 
+#create optional menu to run script in terminal
+Menu()
+{
+    echo "Enter 'ip' to find your IP and subnet"
+    echo "Enter 'iface' to list device interface"
+    echo "Enter the Port number to check if the port is open in the device list"
+    echo ""
+    echo "Press d. to listen for devices on the network"
+    echo "Press l. to display the devices on the network (must run "d" first)"
+    echo "press sl to perform a scripted scan on the listed devices"
+    echo "Press ss. to scan the entire subnet, perform OS Detection and Scripted Scanning"
+    echo "Press m to display menu again"
+    echo "Press q to quit"
+    echo ""
+    echo "To bypass this menu, enter the arguement before running the script"
+
+}
+
+
+
 
 makeChoice(){
-  echo ""
-
   read -p "Select > " arg
   case $arg in   
     n|N) exit 0
@@ -89,8 +89,10 @@ Output()
     ip) echo "IP address and subnet is" $myIP;;
     iface) echo "Interface name is:" $myInterface;;
     d) getDeviceList ;;
-    s) ScanSubnet ;;
+    SS |ss) ScanSubnet ;;
+    SL | sl) ScanList;;
     $1 | m)  Menu;;
+    q) exit 0;;
     $arg) ScanPort ;;
 esac
 
